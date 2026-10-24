@@ -1,0 +1,125 @@
+# ATradeNPC messages. MiniMessage + legacy (&) codes. Set a message to "" to disable it.
+# Theme color: #0BA6DF
+prefix: "&#0BA6DF&lTRADE &7» &7"
+
+noPermission: "<red>You don't have permission to do that."
+playersOnly: "<red>Only players can use this command."
+playerNotFound: "<red>Player <white>%player%</white> not found."
+reloaded: "<#0BA6DF>ATradeNPC reloaded."
+shopNotFound: "<red>Shop <white>%id%</white> not found."
+notLookingAtShop: "<red>Look at a shop NPC or give a shop id."
+notYourShop: "<red>That is not your shop."
+invalidNumber: "<red><white>%input%</white> is not a valid number."
+invalidEntityType: "<red>Entity type <white>%type%</white> is not allowed. Allowed: <white>%types%"
+
+shopCreated: "<#0BA6DF>Shop <white>#%id%</white> created! <gray>Sneak + right-click the NPC to edit it."
+shopRemoved: "<#0BA6DF>Shop <white>#%id%</white> removed."
+shopMoved: "<#0BA6DF>Shop NPC moved to your location."
+shopCentered: "<#0BA6DF>Shop NPC centered on its block."
+shopRenamed: "<#0BA6DF>Shop renamed to <reset>%name%"
+offerDuplicated: "<#0BA6DF>Offer duplicated."
+storageUnavailable: "<red>The storage chest is missing or its chunk is not loaded."
+noOffers: "<gray>This shop has no offers yet."
+playerShopsDisabled: "<red>Player shops are disabled."
+notLookingAtContainer: "<red>Look at a chest/barrel (within 5 blocks) to create a player shop."
+containerAlreadyUsed: "<red>That container is already used by shop <white>#%id%</white>."
+containerNoAccess: "<red>You can't use that container."
+chestTooFar: "<red>The NPC must be within <white>%distance%</white> blocks of the storage chest."
+shopLimitReached: "<red>You reached your shop limit (<white>%limit%</white>)."
+tooManyOffers: "<red>This shop already has the maximum of <white>%max%</white> offers."
+
+chestProtected: "<red>This chest belongs to a shop of <white>%owner%</white>."
+chestBreakOwner: "<red>This chest is the storage of shop <white>#%id%</white>. Remove the shop first (<white>/atrade remove %id%</white>)."
+
+# Trading
+traded: "<#0BA6DF>Traded <white>%times%x</white> for <reset>%item%</reset>."
+bought: "<#0BA6DF>Bought <white>%amount%x</white> <reset>%item%</reset> <#0BA6DF>for <white>%price%</white>."
+sold: "<#0BA6DF>Sold <white>%amount%x</white> <reset>%item%</reset> <#0BA6DF>for <white>%price%</white>."
+notEnoughItems: "<red>You don't have the required items."
+notEnoughMoney: "<red>You don't have enough money (<white>%price%</white>)."
+inventoryFull: "<red>Your inventory is full."
+outOfStock: "<red>This shop is out of stock."
+shopFull: "<red>The shop's storage is full."
+ownerNoMoney: "<red>The shop owner can't afford to buy this right now."
+noEconomy: "<red>Money offers need Vault + an economy plugin."
+offerChanged: "<#5AD1FF>This shop was changed, the menu has been refreshed."
+cantTradeOwnShop: "<red>You can't trade with your own shop. <gray>(Sneak + right-click to edit)"
+ownerNotifyBuy: "<gray>[Shop #%id%] <white>%player%</white> bought <white>%amount%x</white> <reset>%item%</reset> <gray>(+<#0BA6DF>%price%<gray>)"
+ownerNotifySell: "<gray>[Shop #%id%] <white>%player%</white> sold <white>%amount%x</white> <reset>%item%</reset> <gray>(-<#0BA6DF>%price%<gray>)"
+ownerNotifyTrade: "<gray>[Shop #%id%] <white>%player%</white> traded <white>%times%x</white> for <reset>%item%</reset>"
+
+# Editor
+offerSaved: "<#0BA6DF>Offer saved."
+offerDeleted: "<#0BA6DF>Offer deleted."
+offerIncomplete: "<red>The offer is not complete: %reason%"
+reasonNoResult: "set the item the customer receives"
+reasonNoCost: "set at least one cost item"
+reasonNoItem: "set the item"
+reasonNoPrice: "set a price above 0"
+promptPrice: "<#0BA6DF>Type the price in chat. <gray>(type <white>cancel</white> to cancel)"
+promptName: "<#0BA6DF>Type the new shop name in chat. Colors allowed. <gray>(type <white>cancel</white> to cancel)"
+promptCancelled: "<gray>Cancelled."
+promptTimeout: "<gray>Input timed out."
+priceSet: "<#0BA6DF>Price set to <white>%price%</white>."
+
+list-header: "<#0BA6DF>Shops of <white>%player%</white> <gray>(%count%)"
+list-entry: "<gray>#%id% <reset>%name%</reset> <dark_gray>| <gray>%type% <dark_gray>| <white>%world% %x% %y% %z% <dark_gray>| <gray>%offers% offers"
+list-empty: "<gray>No shops found."
+
+help:
+  - "<gradient:#0BA6DF:#5AD1FF><bold>ATradeNPC</bold></gradient> <gray>commands"
+  - "<#0BA6DF>/atrade create admin [type] [name] <gray>- infinite stock shop at your location"
+  - "<#0BA6DF>/atrade create player [type] [name] <gray>- your shop, stock from the chest you look at"
+  - "<#0BA6DF>/atrade edit [id] <gray>- open the editor (or sneak + right-click the NPC)"
+  - "<#0BA6DF>/atrade remove [id] <gray>- remove a shop"
+  - "<#0BA6DF>/atrade rename <id> <name> <gray>- rename a shop"
+  - "<#0BA6DF>/atrade movehere <id> <gray>- move the NPC to you"
+  - "<#0BA6DF>/atrade center [id] <gray>- center the NPC on its block"
+  - "<#0BA6DF>/atrade list [player|all] <gray>- list shops"
+  - "<#0BA6DF>/atrade tp <id> <gray>- teleport to a shop"
+  - "<#0BA6DF>/atrade open <id> [player] <gray>- open a shop's trade screen"
+  - "<#0BA6DF>/atrade reload <gray>- reload config"
+
+# ---------------- GUI ----------------
+gui:
+  # Title of the villager trade screen
+  trade-title: "%name%"
+  editor-title: "<dark_gray>Edit: </dark_gray>%name%"
+  offer-title: "<dark_gray>Offer editor (%type%)"
+  appearance-title: "<dark_gray>NPC appearance"
+  confirm-title: "<red>Delete shop #%id%?"
+
+  # Coin icon in the trade screen. Buy offer = what the customer pays, Sell offer = what they get.
+  money-pay-name: "<#0BA6DF><bold>%price%"
+  money-pay-lore:
+    - "<gray>Paid from your balance."
+    - "<gray>Click the result to buy."
+  money-receive-name: "<#0BA6DF><bold>+%price%"
+  money-receive-lore:
+    - "<gray>Added to your balance."
+    - "<gray>Click to sell, shift-click to sell all."
+
+  # Lore of offers in the editor
+  lore-trade:
+    - ""
+    - "<#0BA6DF>Trade <gray>- cost:"
+    - "%costs%"
+  lore-buy:
+    - ""
+    - "<#0BA6DF>Buy <gray>- price: <white>%price%"
+  lore-sell:
+    - ""
+    - "<#0BA6DF>Sell <gray>- customer gets: <white>%price%"
+  lore-cost-line: "<dark_gray>- <white>%amount%x <reset>%item%"
+  lore-stock: "<gray>Stock: <white>%stock%"
+  lore-editor:
+    - ""
+    - "<dark_gray>-----------------"
+    - "<#0BA6DF>Left-click <gray>» edit"
+    - "<#0BA6DF>Right-click <gray>» duplicate"
+    - "<#0BA6DF>Shift-left <gray>» move left"
+    - "<#0BA6DF>Shift-right <gray>» move right"
+
+  type-trade: "<#0BA6DF>Trade"
+  type-buy: "<#0BA6DF>Buy"
+  type-sell: "<#0BA6DF>Sell"

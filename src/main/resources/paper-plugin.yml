@@ -1,0 +1,14 @@
+name: ATradeNPC
+version: '${project.version}'
+main: io.github.AzmiiD.aTradeNpc.ATradeNPC
+api-version: '26.2'
+description: '${project.description}'
+author: AzmiiD
+
+# Paper plugin: commands are registered through the Brigadier lifecycle API and permissions in code.
+dependencies:
+  server:
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true

@@ -1,0 +1,97 @@
+# ==========================================================
+#  ATradeNPC - shopkeeper NPCs for any item + Vault money
+# ==========================================================
+# Text supports MiniMessage (<red>, <gradient:..>) and legacy codes (&a, &#ffffff).
+
+# Minimum delay between two clicks in a GUI (milliseconds).
+click-cooldown-ms: 100
+
+# Every X seconds missing/moved shop NPCs are respawned/teleported back.
+npc-check-interval-seconds: 5
+
+npc:
+  # Put new/moved NPCs exactly in the middle of the block they stand on.
+  center-on-block: true
+  # NPCs turn their head towards the nearest player.
+  look-at-players: true
+  # How close (blocks) a player must be for the NPC to look at them.
+  look-range: 8
+
+# Write every trade/buy/sell to plugins/ATradeNPC/data/transactions.log
+log-transactions: true
+
+# Sounds: "<sound key> [volume] [pitch]". Any vanilla or resource-pack sound. "" = off.
+sounds:
+  open-shop: "entity.villager.ambient 1 1"
+  trade-success: "entity.villager.yes 1 1"
+  trade-fail: "entity.villager.no 1 1"
+  click: "ui.button.click 0.5 1"
+
+# Maximum number of offers in one shop (45 per GUI page).
+max-offers: 135
+
+# Entity type used by "/atrade create" when no type is given.
+default-entity-type: VILLAGER
+
+# Entity types a shop NPC can use (shown in the Appearance menu).
+allowed-entity-types:
+  - VILLAGER
+  - WANDERING_TRADER
+  - ZOMBIE_VILLAGER
+  - PILLAGER
+  - VINDICATOR
+  - EVOKER
+  - WITCH
+  - ZOMBIE
+  - HUSK
+  - DROWNED
+  - SKELETON
+  - STRAY
+  - WITHER_SKELETON
+  - PIGLIN
+  - PIGLIN_BRUTE
+  - BLAZE
+  - CREEPER
+  - ENDERMAN
+  - IRON_GOLEM
+  - SNOW_GOLEM
+  - ALLAY
+  - COW
+  - PIG
+  - SHEEP
+  - CHICKEN
+  - FOX
+  - CAT
+  - WOLF
+  - PANDA
+  - POLAR_BEAR
+  - GOAT
+  - FROG
+  - AXOLOTL
+  - RABBIT
+
+economy:
+  # How money is shown. %amount% = formatted number.
+  currency-format: "$%amount%"
+  # Item used as the "coin" icon for money in the villager trade screen.
+  money-item: GOLD_NUGGET
+
+player-shops:
+  # Allow normal players to create their own shops (stock comes from a linked chest).
+  enabled: true
+  # Default maximum shops per player. -1 = unlimited.
+  # Players can get more with the permission atradenpc.limit.<number> (e.g. atradenpc.limit.10).
+  max-shops: 5
+  # Max distance between the NPC and its storage chest.
+  max-chest-distance: 10
+  # Containers that can be used as storage.
+  allowed-containers:
+    - CHEST
+    - TRAPPED_CHEST
+    - BARREL
+  # Fire a test right-click on the chest when creating, so claim/protection plugins can deny it.
+  check-chest-access: true
+  # Only the owner (and admins) can open/break the storage chest, and hoppers can't pull from it.
+  protect-chest: true
+  # Percentage taken from money the owner earns when a customer buys (0 = no tax).
+  tax-percent: 0.0
