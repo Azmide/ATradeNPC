@@ -76,3 +76,9 @@ The jar is written to `target/ATradeNPC-<version>.jar`. Every push to GitHub als
 - `lang.yml`: every message and GUI text
 - `data/shops.yml`: saved shops (items are stored as full binary item data)
 - `data/transactions.log`: one line per transaction
+
+### Updating
+
+Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
+are added to your existing files with their default values and comments. Your own values are never changed.
+Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.

@@ -6,6 +6,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.ArrayList;
@@ -22,9 +24,25 @@ import java.util.Set;
 public final class Text {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
+    /** Colors and text styles only: no click/hover/insertion/selector tags. Used for text typed by players. */
+    private static final MiniMessage SAFE = MiniMessage.builder()
+            .tags(TagResolver.resolver(StandardTags.color(), StandardTags.decorations(), StandardTags.gradient(),
+                    StandardTags.rainbow(), StandardTags.reset()))
+            .build();
     private static final String COLOR_CODES = "0123456789abcdef";
 
     private Text() {
+    }
+
+    /**
+     * Makes player input safe to embed in other messages: style tags are kept, every other tag
+     * (e.g. {@code <click:run_command:...>}) is escaped and shows up as plain text.
+     */
+    public static String sanitize(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+        return MM.serialize(SAFE.deserialize(legacyToMini(input)));
     }
 
     public static Component parse(String input) {

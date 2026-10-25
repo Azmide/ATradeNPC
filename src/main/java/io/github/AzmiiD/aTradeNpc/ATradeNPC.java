@@ -1,6 +1,7 @@
 package io.github.AzmiiD.aTradeNpc;
 
 import io.github.AzmiiD.aTradeNpc.command.ATradeCommand;
+import io.github.AzmiiD.aTradeNpc.config.ConfigUpdater;
 import io.github.AzmiiD.aTradeNpc.config.Lang;
 import io.github.AzmiiD.aTradeNpc.config.Settings;
 import io.github.AzmiiD.aTradeNpc.economy.VaultHook;
@@ -137,12 +138,17 @@ public final class ATradeNPC extends JavaPlugin {
 
     private void loadConfigs() {
         saveDefaultConfig();
-        if (!new File(getDataFolder(), "lang.yml").exists()) {
+        File langFile = new File(getDataFolder(), "lang.yml");
+        if (!langFile.exists()) {
             saveResource("lang.yml", false);
         }
+        // A newer jar may have new options: add them to the existing files without touching the user's values.
+        ConfigUpdater.update(new File(getDataFolder(), "config.yml"), getResource("config.yml"), getLogger());
+        ConfigUpdater.update(langFile, getResource("lang.yml"), getLogger());
         reloadConfig();
         settings = new Settings(getConfig(), getLogger());
-        lang.load(new File(getDataFolder(), "lang.yml"), getResource("lang.yml"));
+        lang.load(langFile, getResource("lang.yml"));
+        vault.reset();
         vault.setCurrencyFormat(settings.currencyFormat);
         sounds.load(getConfig().getConfigurationSection("sounds"));
         transactionLogger.setEnabled(getConfig().getBoolean("log-transactions", true));

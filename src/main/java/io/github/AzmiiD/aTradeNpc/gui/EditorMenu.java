@@ -131,8 +131,9 @@ public class EditorMenu extends Menu {
                 }
             }
             case RENAME -> plugin.getPrompt().ask(player, "promptName", text -> {
-                if (!shop.isRemoved()) {
-                    plugin.getShopService().rename(shop, text);
+                String name = shop.isRemoved() ? null : plugin.getShopService().cleanName(player, text);
+                if (name != null) {
+                    plugin.getShopService().rename(shop, name);
                     plugin.getLang().send(player, "shopRenamed", "%name%", shop.getName());
                 }
                 new EditorMenu(plugin, player, shop, page).open();

@@ -57,26 +57,51 @@ public class ShopManager {
         byContainer.clear();
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         nextId = Math.max(1, yaml.getInt("next-id", 1));
+        boolean broken = false;
         ConfigurationSection section = yaml.getConfigurationSection("shops");
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 try {
                     int id = Integer.parseInt(key);
+                    // Never hand out this id again, even when the shop itself can't be loaded.
+                    nextId = Math.max(nextId, id + 1);
                     TradeShop shop = TradeShop.load(id, section.getConfigurationSection(key));
+                    if (shop.getBrokenOffers() > 0) {
+                        broken = true;
+                        plugin.getLogger().warning("Shop #" + id + ": skipped " + shop.getBrokenOffers() + " offer(s) that could not be loaded");
+                    }
                     shops.put(id, shop);
                     index(shop);
                     indexContainer(shop);
-                    nextId = Math.max(nextId, id + 1);
                 } catch (Exception e) {
+                    broken = true;
                     plugin.getLogger().log(Level.WARNING, "Could not load shop " + key, e);
                 }
             }
+        }
+        if (broken) {
+            backupBrokenFile();
+        }
+    }
+
+    /** The next save drops what could not be loaded, so keep a copy of the original file. */
+    private void backupBrokenFile() {
+        File backup = new File(file.getParentFile(), "shops-broken-" + System.currentTimeMillis() + ".yml");
+        try {
+            Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            plugin.getLogger().warning("Some shop data could not be loaded. The original file was copied to " + backup.getPath());
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not back up " + file.getName(), e);
         }
     }
 
     /** Saves asynchronously (the YAML is built on the calling thread). */
     public void save() {
         String data = serialize();
+        if (saveExecutor.isShutdown()) {
+            write(data); // plugin is disabling
+            return;
+        }
         saveExecutor.execute(() -> write(data));
     }
 
@@ -132,9 +157,9 @@ public class ShopManager {
         shop.setRemoved(true);
         shops.remove(shop.getId());
         unindex(shop);
-        Block chest = shop.getChestBlock();
-        if (chest != null) {
-            byContainer.remove(key(chest));
+        String chestKey = shop.getChestKey();
+        if (chestKey != null) {
+            byContainer.remove(chestKey, shop);
         }
         save();
     }
@@ -169,9 +194,10 @@ public class ShopManager {
     }
 
     private void indexContainer(TradeShop shop) {
-        Block chest = shop.getType() == ShopType.PLAYER ? shop.getChestBlock() : null;
-        if (chest != null) {
-            byContainer.put(key(chest), shop);
+        // Keyed by the saved coordinates, so chests in worlds that load later are protected too.
+        String chestKey = shop.getType() == ShopType.PLAYER ? shop.getChestKey() : null;
+        if (chestKey != null) {
+            byContainer.put(chestKey, shop);
         }
     }
 

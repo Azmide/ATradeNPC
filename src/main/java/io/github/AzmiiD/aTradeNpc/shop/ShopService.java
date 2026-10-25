@@ -4,11 +4,13 @@ import io.github.AzmiiD.aTradeNpc.ATradeNPC;
 import io.github.AzmiiD.aTradeNpc.config.Lang;
 import io.github.AzmiiD.aTradeNpc.config.Settings;
 import io.github.AzmiiD.aTradeNpc.gui.EditorMenu;
+import io.github.AzmiiD.aTradeNpc.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -21,6 +23,8 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 public class ShopService {
 
     private static final String LIMIT_PREFIX = "atradenpc.limit.";
+    /** Max visible characters / max raw length (with tags) of a shop name typed by a non-admin. */
+    private static final int MAX_NAME_LENGTH = 48, MAX_NAME_RAW = 256;
 
     private final ATradeNPC plugin;
 
@@ -169,6 +173,22 @@ public class ShopService {
         manager.reindex(shop);
         manager.save();
         plugin.getNpcManager().respawn(shop);
+    }
+
+    /**
+     * Shop names typed by non-admins may only use colors/styles: click/hover tags would run when an admin
+     * clicks the name in /atrade list. Returns null (and sends the error) when the name is too long.
+     */
+    public String cleanName(CommandSender sender, String name) {
+        if (name == null || sender.hasPermission("atradenpc.admin")) {
+            return name;
+        }
+        String clean = Text.sanitize(name);
+        if (clean.length() > MAX_NAME_RAW || Text.plain(Text.parse(clean)).length() > MAX_NAME_LENGTH) {
+            lang().send(sender, "nameTooLong", "%max%", String.valueOf(MAX_NAME_LENGTH));
+            return null;
+        }
+        return clean;
     }
 
     public void rename(TradeShop shop, String name) {

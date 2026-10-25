@@ -24,6 +24,11 @@ public class VaultHook {
         this.currencyFormat = currencyFormat;
     }
 
+    /** Forgets the cached provider, e.g. on reload when the economy plugin was replaced/reloaded. */
+    public void reset() {
+        economy = null;
+    }
+
     private Economy economy() {
         if (economy == null && Bukkit.getPluginManager().getPlugin("Vault") != null) {
             RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);

@@ -38,6 +38,7 @@ public final class TradeShop {
     /** The currently spawned entity (not saved). */
     private transient Entity entity;
     private transient boolean removed;
+    private transient int brokenOffers;
 
     public TradeShop(int id, ShopType type) {
         this.id = id;
@@ -45,7 +46,7 @@ public final class TradeShop {
     }
 
     public Location getLocation() {
-        World w = Bukkit.getWorld(world);
+        World w = world == null ? null : Bukkit.getWorld(world);
         return w == null ? null : new Location(w, x, y, z, yaw, pitch);
     }
 
@@ -83,6 +84,11 @@ public final class TradeShop {
         this.chestX = block.getX();
         this.chestY = block.getY();
         this.chestZ = block.getZ();
+    }
+
+    /** "world;x;y;z" of the storage container, null when there is none. Works while the world is unloaded. */
+    public String getChestKey() {
+        return chestWorld == null ? null : chestWorld + ';' + chestX + ';' + chestY + ';' + chestZ;
     }
 
     public boolean isChestAt(Block block) {
@@ -151,12 +157,29 @@ public final class TradeShop {
         if (offers != null) {
             for (String key : offers.getKeys(false)) {
                 ConfigurationSection o = offers.getConfigurationSection(key);
-                if (o != null) {
-                    shop.offers.add(Offer.load(o));
+                if (o == null) {
+                    continue;
+                }
+                // One broken offer (e.g. an item from a removed plugin) must not take the whole shop down.
+                try {
+                    Offer offer = Offer.load(o);
+                    offer.normalize();
+                    if (offer.validate() == null) {
+                        shop.offers.add(offer);
+                    } else {
+                        shop.brokenOffers++;
+                    }
+                } catch (Exception e) {
+                    shop.brokenOffers++;
                 }
             }
         }
         return shop;
+    }
+
+    /** Offers that could not be loaded (not saved again). */
+    public int getBrokenOffers() {
+        return brokenOffers;
     }
 
     public int getId() {

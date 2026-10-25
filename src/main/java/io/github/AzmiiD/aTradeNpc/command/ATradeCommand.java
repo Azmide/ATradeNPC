@@ -96,7 +96,13 @@ public class ATradeCommand implements BasicCommand {
                 return;
             }
         }
-        String name = args.length > nameStart ? String.join(" ", Arrays.copyOfRange(args, nameStart, args.length)) : null;
+        String name = null;
+        if (args.length > nameStart) {
+            name = plugin.getShopService().cleanName(player, String.join(" ", Arrays.copyOfRange(args, nameStart, args.length)));
+            if (name == null) {
+                return;
+            }
+        }
         TradeShop shop = admin ? plugin.getShopService().createAdmin(player, type, name)
                 : plugin.getShopService().createPlayer(player, type, name);
         if (shop != null) {
@@ -168,8 +174,11 @@ public class ATradeCommand implements BasicCommand {
         }
         TradeShop shop = findShop(sender, args, 1);
         if (shop != null && canEdit(sender, shop)) {
-            plugin.getShopService().rename(shop, String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
-            lang().send(sender, "shopRenamed", "%name%", shop.getName());
+            String name = plugin.getShopService().cleanName(sender, String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
+            if (name != null) {
+                plugin.getShopService().rename(shop, name);
+                lang().send(sender, "shopRenamed", "%name%", shop.getName());
+            }
         }
     }
 

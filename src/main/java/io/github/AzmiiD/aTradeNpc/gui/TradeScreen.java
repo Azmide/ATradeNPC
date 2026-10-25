@@ -53,6 +53,7 @@ public class TradeScreen implements Listener {
     private final ATradeNPC plugin;
     private final NamespacedKey displayKey;
     private final Map<UUID, Session> sessions = new HashMap<>();
+    private final Map<UUID, Long> lastTrade = new HashMap<>();
 
     public TradeScreen(ATradeNPC plugin) {
         this.plugin = plugin;
@@ -165,7 +166,7 @@ public class TradeScreen implements Listener {
         }
         // Result slot: never let vanilla do the trade.
         event.setCancelled(true);
-        if (ItemUtil.isEmpty(inv.getItem(RESULT_SLOT))) {
+        if (ItemUtil.isEmpty(inv.getItem(RESULT_SLOT)) || onCooldown(player)) {
             return;
         }
         int index = inv.getSelectedRecipeIndex();
@@ -203,6 +204,17 @@ public class TradeScreen implements Listener {
         }
         plugin.getTransactions().execute(player, shop, offer, times, inv);
         Bukkit.getScheduler().runTask(plugin, player::updateInventory);
+    }
+
+    /** Every trade click runs whole transactions (shift = up to a full inventory), so spam clicks are limited. */
+    private boolean onCooldown(Player player) {
+        long now = System.currentTimeMillis();
+        Long last = lastTrade.get(player.getUniqueId());
+        if (last != null && now - last < plugin.getSettings().clickCooldown) {
+            return true;
+        }
+        lastTrade.put(player.getUniqueId(), now);
+        return false;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -250,6 +262,7 @@ public class TradeScreen implements Listener {
             return;
         }
         sessions.remove(player.getUniqueId());
+        lastTrade.remove(player.getUniqueId());
         clearDisplay((MerchantInventory) event.getInventory());
         Bukkit.getScheduler().runTask(plugin, () -> purge(player));
     }
