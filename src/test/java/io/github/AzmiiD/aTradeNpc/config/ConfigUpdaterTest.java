@@ -28,6 +28,7 @@ class ConfigUpdaterTest {
                 }
                 if (resource.equals("config.yml")) {
                     assertTrue(yaml.getBoolean("holograms.hide-npc-name"));
+                    assertEquals(2.5, yaml.getDouble("holograms.link-height"));
                 }
             }
         }

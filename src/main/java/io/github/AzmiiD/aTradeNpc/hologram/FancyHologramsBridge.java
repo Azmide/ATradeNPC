@@ -6,21 +6,28 @@ import org.bukkit.Location;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 /** Loaded only when FancyHolograms is installed and enabled. */
 public final class FancyHologramsBridge implements HologramBridge {
     private final Logger logger;
     private boolean warned;
+    private final Supplier<HologramManager> managers;
 
     public FancyHologramsBridge(Logger logger) {
+        this(logger, () -> FancyHologramsPlugin.get().getHologramManager());
+    }
+
+    FancyHologramsBridge(Logger logger, Supplier<HologramManager> managers) {
         this.logger = logger;
+        this.managers = managers;
         // Resolve/check the API while the optional-provider factory can still catch linkage errors.
         manager().isLoaded();
     }
 
     private HologramManager manager() {
-        return FancyHologramsPlugin.get().getHologramManager();
+        return managers.get();
     }
 
     @Override
@@ -50,6 +57,8 @@ public final class FancyHologramsBridge implements HologramBridge {
             target.setPitch(previous.getPitch());
             hologram.getData().setLocation(target);
             hologram.forceUpdate();
+            // forceUpdate changes provider state; explicitly send the teleport to current viewers.
+            hologram.refreshForViewersInWorld();
             hologram.queueUpdate();
             manager.saveHolograms();
             return true;

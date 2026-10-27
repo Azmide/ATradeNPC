@@ -62,20 +62,20 @@ class HologramServiceTest {
         shop = shop(1);
         shops.add(shop);
         bridge.entries.put("shop_holo", new HologramBridge.Entry("shop_holo", new Location(WORLD, 11, 67, 22), true, false));
-        service = new HologramService(() -> shops, saves::incrementAndGet, ignored -> {}, () -> available ? bridge : null);
+        service = new HologramService(() -> shops, saves::incrementAndGet, ignored -> {}, () -> available ? bridge : null, () -> 2.5);
     }
 
     @Test
     void linksPersistAndOldShopsRemainCompatible() throws Exception {
         assertNull(service.link(shop, "shop_holo"));
-        assertEquals(0, bridge.moves);
+        assertEquals(1, bridge.moves);
         YamlConfiguration yaml = new YamlConfiguration();
         shop.save(yaml);
         YamlConfiguration reloaded = new YamlConfiguration();
         reloaded.loadFromString(yaml.saveToString());
         TradeShop loaded = TradeShop.load(1, reloaded);
         assertEquals("shop_holo", loaded.getHologramName());
-        assertPosition(loaded.getHologramLocation(), WORLD, 11, 67, 22);
+        assertPosition(loaded.getHologramLocation(), WORLD, 10, 66.5, 20);
         reloaded.set("hologram", null);
         assertNull(TradeShop.load(2, reloaded).getHologramName());
     }
@@ -85,7 +85,7 @@ class HologramServiceTest {
         assertNull(service.link(shop, "shop_holo"));
         bridge.entries.put("shop_holo", new HologramBridge.Entry("shop_holo", new Location(WORLD, 12, 69, 23), true, false));
         service.checkAll();
-        assertEquals(0, bridge.moves, "Periodic checks must not overwrite /hologram position edits");
+        assertEquals(1, bridge.moves, "Periodic checks must not overwrite /hologram position edits");
         service.beforeMove(shop);
         shop.setLocation(new Location(WORLD, 100, 70, 200));
         service.afterMove(shop);
@@ -99,7 +99,7 @@ class HologramServiceTest {
         service.beforeMove(shop);
         shop.setLocation(new Location(OTHER_WORLD, 0, 80, 0));
         service.afterMove(shop);
-        assertPosition(bridge.entries.get("shop_holo").location(), OTHER_WORLD, 1, 83, 2);
+        assertPosition(bridge.entries.get("shop_holo").location(), OTHER_WORLD, 0, 82.5, 0);
     }
 
     @Test
@@ -118,9 +118,9 @@ class HologramServiceTest {
         shops.set(0, TradeShop.load(1, yaml));
         available = true;
         service.checkAll();
-        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 201, 83, 302);
+        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 200, 82.5, 300);
         assertFalse(shops.getFirst().isHologramMovePending());
-        assertEquals(1, bridge.moves);
+        assertEquals(2, bridge.moves);
     }
 
     @Test
@@ -143,7 +143,7 @@ class HologramServiceTest {
         assertTrue(shop.isHologramMovePending());
         bridge.failMove = false;
         service.checkAll();
-        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 101, 73, 202);
+        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 100, 72.5, 200);
         assertFalse(shop.isHologramMovePending());
     }
 
@@ -163,6 +163,35 @@ class HologramServiceTest {
         available = false;
         assertEquals("hologramUnavailable", service.link(other, "shop_holo"));
         assertTrue(service.names().isEmpty());
+    }
+
+    @Test
+    void linkAndRelinkCenterDistantHologramsAboveTheNpc() {
+        bridge.entries.put("shop_holo", new HologramBridge.Entry("shop_holo", new Location(WORLD, 500, 80, -300), true, false));
+        assertNull(service.link(shop, "shop_holo"));
+        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 10, 66.5, 20);
+        bridge.entries.put("shop_holo", new HologramBridge.Entry("shop_holo", new Location(WORLD, -40, 64, 25), true, false));
+        assertNull(service.link(shop, "shop_holo"));
+        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 10, 66.5, 20);
+    }
+
+    @Test
+    void failedLinkDoesNotReplacePreviousLinkOrReportSuccess() {
+        assertNull(service.link(shop, "shop_holo"));
+        int previousSaves = saves.get();
+        bridge.entries.put("replacement", new HologramBridge.Entry("replacement", new Location(WORLD, 0, 80, 0), true, false));
+        bridge.failMove = true;
+        assertEquals("hologramMoveFailed", service.link(shop, "replacement"));
+        assertEquals("shop_holo", shop.getHologramName());
+        assertEquals(previousSaves, saves.get());
+        assertPosition(shop.getHologramLocation(), WORLD, 10, 66.5, 20);
+    }
+
+    @Test
+    void linkUsesConfiguredHeight() {
+        service = new HologramService(() -> shops, saves::incrementAndGet, ignored -> {}, () -> bridge, () -> 1.25);
+        assertNull(service.link(shop, "shop_holo"));
+        assertPosition(bridge.entries.get("shop_holo").location(), WORLD, 10, 65.25, 20);
     }
 
     @Test

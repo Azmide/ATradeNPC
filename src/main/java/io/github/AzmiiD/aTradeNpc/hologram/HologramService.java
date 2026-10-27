@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
 /** Links existing, externally edited holograms to stable shop ids. Never owns/deletes their text or data. */
 public final class HologramService {
@@ -15,6 +16,7 @@ public final class HologramService {
     private final Runnable save;
     private final Consumer<TradeShop> refresh;
     private final Supplier<HologramBridge> provider;
+    private final DoubleSupplier linkHeight;
 
     public HologramService(ATradeNPC plugin) {
         this(() -> plugin.getShopManager().getShops(), () -> plugin.getShopManager().save(),
@@ -38,15 +40,16 @@ public final class HologramService {
                             return null;
                         }
                     }
-                });
+                }, () -> plugin.getSettings().hologramLinkHeight);
     }
 
     HologramService(Supplier<Collection<TradeShop>> shops, Runnable save,
-                    Consumer<TradeShop> refresh, Supplier<HologramBridge> provider) {
+                    Consumer<TradeShop> refresh, Supplier<HologramBridge> provider, DoubleSupplier linkHeight) {
         this.shops = shops;
         this.save = save;
         this.refresh = refresh;
         this.provider = provider;
+        this.linkHeight = linkHeight;
     }
 
     public List<String> names() {
@@ -77,7 +80,14 @@ public final class HologramService {
         if (anchor == null || location == null || !anchor.getWorld().equals(location.getWorld())) {
             return "hologramWrongWorld";
         }
-        captureOffset(shop, entry, anchor);
+        // A link must visibly attach the hologram, rather than keeping an arbitrary
+        // distance from where it was originally created. Relinking also repairs old links.
+        double height = linkHeight.getAsDouble();
+        Location target = anchor.clone().add(0, height, 0);
+        if (!bridge.move(entry.name(), target)) {
+            return "hologramMoveFailed";
+        }
+        shop.linkHologram(entry.name(), 0, height, 0);
         save.run();
         refresh.accept(shop);
         return null;

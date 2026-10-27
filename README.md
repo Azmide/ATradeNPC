@@ -80,7 +80,7 @@ The jar is written to `target/ATradeNPC-<version>.jar`. Every push to GitHub als
 Install a FancyHolograms **2.x** release compatible with your Paper server (integration built against API **2.9.1**).
 FancyHolograms is optional; shops and trades work without it. FancyNpcs is not required.
 
-Create and position a hologram using FancyHolograms, then link it by name:
+Create a hologram using FancyHolograms, then link it by name:
 
 ```text
 /hologram create text toko_pedang
@@ -90,7 +90,7 @@ Create and position a hologram using FancyHolograms, then link it by name:
 /atrade hologram info 1
 ```
 
-- Linking preserves the hologram's current position. Place it above the NPC before linking.
+- Linking places the hologram directly above the NPC (`holograms.link-height`, default 2.5 blocks above its feet). Run the same link command again to recenter an old or misplaced link; unlinking first is not required.
 - Continue editing text, colors, background, scale, visibility and position through `/hologram edit <name> ...`.
 - `/atrade movehere` and `/atrade center` move the linked hologram with the NPC, preserving its relative position and orientation. Manual hologram position edits become the new offset on the next NPC move.
 - Links and offsets are saved in `data/shops.yml`. If FancyHolograms or the named hologram is temporarily unavailable during an NPC move, the pending position is applied when it becomes available again.
@@ -113,6 +113,13 @@ FancyHolograms' own `linkwithnpc` command is for FancyNpcs; use `/atrade hologra
 Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
+
+### 1.3.1
+
+- Linking/relinking immediately places the hologram above its shop NPC instead of preserving an arbitrary distant offset.
+- Add `holograms.link-height` (default 2.5) through the automatic config updater.
+- Explicitly refresh current FancyHolograms viewers after moving so they receive the new position immediately.
+- Do not report a successful link or replace the previous link if the provider cannot move/save the hologram.
 
 ### 1.3.0
 
