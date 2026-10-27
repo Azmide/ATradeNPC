@@ -82,3 +82,10 @@ The jar is written to `target/ATradeNPC-<version>.jar`. Every push to GitHub als
 Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
+
+### 1.2.1
+
+- Fix money display icons appearing in the player's inventory when switching offers rapidly.
+- Synchronize inventory after every offer selection and discard pending updates from older selections.
+- Block moving, dropping, or picking up escaped money display icons.
+- Existing config and language files are updated automatically as described above. This patch adds no new settings.

@@ -20,6 +20,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MenuType;
@@ -47,7 +49,11 @@ public class TradeScreen implements Listener {
 
     private static final int RESULT_SLOT = 2;
 
-    private record Session(TradeShop shop, Merchant merchant, List<Offer> offers) {
+    private record Session(TradeShop shop, Merchant merchant, List<Offer> offers, Selection selection) {
+    }
+
+    private static final class Selection {
+        private long revision;
     }
 
     private final ATradeNPC plugin;
@@ -78,7 +84,7 @@ public class TradeScreen implements Listener {
                 .checkReachable(false)
                 .build(player);
         player.openInventory(view);
-        sessions.put(player.getUniqueId(), new Session(shop, merchant, offers));
+        sessions.put(player.getUniqueId(), new Session(shop, merchant, offers, new Selection()));
         plugin.getSounds().play(player, "open-shop");
     }
 
@@ -144,12 +150,23 @@ public class TradeScreen implements Listener {
             return;
         }
         Session session = session(player, event.getView().getTopInventory());
+        // Protect leaked icons even after the merchant has been closed. SELL's result
+        // icon is handled below as a money transaction, never as an item transfer.
+        boolean result = session != null && event.getRawSlot() == RESULT_SLOT;
+        if (isDisplayItem(event.getCursor()) || (!result && isDisplayItem(event.getCurrentItem()))
+                || (event.getHotbarButton() >= 0
+                && isDisplayItem(player.getInventory().getItem(event.getHotbarButton())))) {
+            event.setCancelled(true);
+            syncLater(player);
+            return;
+        }
         if (session == null) {
             return;
         }
         MerchantInventory inv = (MerchantInventory) event.getView().getTopInventory();
-        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR || isDisplayItem(event.getCursor())) {
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
             event.setCancelled(true);
+            syncLater(player);
             return;
         }
         boolean top = event.getClickedInventory() == inv;
@@ -219,14 +236,19 @@ public class TradeScreen implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDrag(InventoryDragEvent event) {
-        if (event.getWhoClicked() instanceof Player player && session(player, event.getView().getTopInventory()) != null
-                && (isDisplayItem(event.getOldCursor()) || event.getRawSlots().contains(RESULT_SLOT))) {
+        if (event.getWhoClicked() instanceof Player player
+                && (isDisplayItem(event.getOldCursor())
+                || (session(player, event.getView().getTopInventory()) != null
+                && (event.getRawSlots().contains(RESULT_SLOT)
+                || event.getRawSlots().stream().anyMatch(slot -> slot < 2
+                && isDisplayItem(event.getView().getItem(slot))))))) {
             event.setCancelled(true);
+            syncLater(player);
         }
     }
 
     /** Fires before vanilla moves the payment items back: take our coin out first. */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSelect(TradeSelectEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
@@ -236,18 +258,26 @@ public class TradeScreen implements Listener {
             return;
         }
         MerchantInventory inv = event.getInventory();
+        long revision = ++session.selection().revision;
         clearDisplay(inv);
+        purge(player);
         int index = event.getIndex();
-        if (index < 0 || index >= session.offers().size() || session.offers().get(index).getType() != OfferType.BUY) {
-            return;
-        }
-        MerchantRecipe recipe = session.merchant().getRecipe(index);
+        // Vanilla also predicts returning inputs on the client. Always send the
+        // complete server contents afterwards, including BUY -> SELL/TRADE.
         Bukkit.getScheduler().runTask(plugin, () -> {
-            if (session(player, player.getOpenInventory().getTopInventory()) == session
+            if (session(player, player.getOpenInventory().getTopInventory()) != session
+                    || session.selection().revision != revision) {
+                return;
+            }
+            purge(player);
+            if (index >= 0 && index < session.offers().size()
+                    && session.offers().get(index).getType() == OfferType.BUY
                     && inv.getSelectedRecipeIndex() == index
                     && ItemUtil.isEmpty(inv.getItem(0)) && ItemUtil.isEmpty(inv.getItem(1))) {
+                MerchantRecipe recipe = session.merchant().getRecipe(index);
                 inv.setItem(0, recipe.getIngredients().getFirst().clone());
             }
+            player.updateInventory();
         });
     }
 
@@ -264,12 +294,40 @@ public class TradeScreen implements Listener {
         sessions.remove(player.getUniqueId());
         lastTrade.remove(player.getUniqueId());
         clearDisplay((MerchantInventory) event.getInventory());
-        Bukkit.getScheduler().runTask(plugin, () -> purge(player));
+        purge(player);
+        if (plugin.isEnabled()) {
+            syncLater(player);
+        }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         purge(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event) {
+        if (isDisplayItem(event.getItemDrop().getItemStack())) {
+            event.setCancelled(true);
+            syncLater(event.getPlayer());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPickup(EntityPickupItemEvent event) {
+        if (isDisplayItem(event.getItem().getItemStack())) {
+            event.setCancelled(true);
+            event.getItem().remove();
+        }
+    }
+
+    private void syncLater(Player player) {
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (player.isOnline()) {
+                purge(player);
+                player.updateInventory();
+            }
+        });
     }
 
     private void clearDisplay(MerchantInventory inv) {
