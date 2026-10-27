@@ -24,6 +24,9 @@ public final class TradeShop {
     private String name;
     private EntityType entityType;
     private String profession;
+    private String hologramName;
+    private double hologramOffsetX, hologramOffsetY, hologramOffsetZ;
+    private boolean hologramMovePending;
 
     private String world;
     private double x, y, z;
@@ -115,6 +118,14 @@ public final class TradeShop {
         s.set("name", name);
         s.set("entity", entityType.name());
         s.set("profession", profession);
+        s.set("hologram", null);
+        if (hologramName != null) {
+            s.set("hologram.name", hologramName);
+            s.set("hologram.offset.x", hologramOffsetX);
+            s.set("hologram.offset.y", hologramOffsetY);
+            s.set("hologram.offset.z", hologramOffsetZ);
+            s.set("hologram.move-pending", hologramMovePending);
+        }
         s.set("location.world", world);
         s.set("location.x", x);
         s.set("location.y", y);
@@ -141,6 +152,11 @@ public final class TradeShop {
         EntityType type = Settings.parseEntityType(s.getString("entity"));
         shop.entityType = type == null ? EntityType.VILLAGER : type;
         shop.profession = s.getString("profession");
+        shop.hologramName = s.getString("hologram.name");
+        shop.hologramOffsetX = s.getDouble("hologram.offset.x");
+        shop.hologramOffsetY = s.getDouble("hologram.offset.y");
+        shop.hologramOffsetZ = s.getDouble("hologram.offset.z");
+        shop.hologramMovePending = s.getBoolean("hologram.move-pending");
         shop.world = s.getString("location.world");
         shop.x = s.getDouble("location.x");
         shop.y = s.getDouble("location.y");
@@ -221,6 +237,36 @@ public final class TradeShop {
 
     public String getProfession() {
         return profession;
+    }
+
+    public String getHologramName() {
+        return hologramName;
+    }
+
+    public void linkHologram(String name, double offsetX, double offsetY, double offsetZ) {
+        hologramName = name;
+        hologramOffsetX = offsetX;
+        hologramOffsetY = offsetY;
+        hologramOffsetZ = offsetZ;
+        hologramMovePending = false;
+    }
+
+    public void unlinkHologram() {
+        hologramName = null;
+        hologramMovePending = false;
+    }
+
+    public boolean isHologramMovePending() {
+        return hologramMovePending;
+    }
+
+    public void setHologramMovePending(boolean pending) {
+        hologramMovePending = pending;
+    }
+
+    public Location getHologramLocation() {
+        Location location = getLocation();
+        return location == null ? null : location.add(hologramOffsetX, hologramOffsetY, hologramOffsetZ);
     }
 
     public void setProfession(String profession) {

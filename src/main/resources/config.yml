@@ -20,6 +20,11 @@ npc:
 # Write every trade/buy/sell to plugins/ATradeNPC/data/transactions.log
 log-transactions: true
 
+holograms:
+  # Hide the NPC's ordinary name tag while its linked FancyHolograms hologram exists.
+  # Text, style and position are edited with FancyHolograms commands.
+  hide-npc-name: true
+
 # Sounds: "<sound key> [volume] [pitch]". Any vanilla or resource-pack sound. "" = off.
 sounds:
   open-shop: "entity.villager.ambient 1 1"

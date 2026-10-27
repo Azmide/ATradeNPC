@@ -22,6 +22,7 @@ Customers use the **vanilla villager trading screen**. Owners edit their shop in
   - Rename the shop, change the NPC type (villager, zombie, piglin, …) and the villager profession.
   - Move or center the NPC, open the storage chest, delete the shop.
 - **NPCs look at nearby players** and stand in the **center of their block**.
+- **Optional FancyHolograms integration**: link an existing hologram to a shop, edit it with FancyHolograms commands, and keep its position relative to the NPC when moving the shop.
 - NPCs can't be hurt, pushed, leashed, converted or set on fire.
 - Every transaction is simulated before it is applied, so items are never duplicated or lost.
 - Configurable sounds, transaction log, and messages with MiniMessage, `&` codes and `&#rrggbb` hex colors.
@@ -43,6 +44,9 @@ Customers use the **vanilla villager trading screen**. Owners edit their shop in
 | `/atrade rename <id> <name>` | Rename a shop |
 | `/atrade movehere <id>` | Move the NPC to you |
 | `/atrade center [id]` | Center the NPC on its block |
+| `/atrade hologram link <id> <hologram>` | Link an existing FancyHolograms hologram |
+| `/atrade hologram unlink <id>` | Unlink and keep the hologram |
+| `/atrade hologram info <id>` | Show the linked hologram and availability |
 | `/atrade list [player\|admin\|all]` | List shops |
 | `/atrade tp <id>` | Teleport to a shop |
 | `/atrade open <id> [player]` | Open a shop's trade screen (console / other plugins) |
@@ -58,6 +62,7 @@ Aliases: `/atradenpc`, `/tradenpc`. Without an id, commands use the NPC you are 
 | `atradenpc.create.player` | everyone | Create player shops |
 | `atradenpc.create.admin` | op | Create and edit admin shops |
 | `atradenpc.open` | op | `/atrade open` |
+| `atradenpc.hologram` | op | Manage hologram links (also requires edit access to the shop) |
 | `atradenpc.limit.<n>` | – | Max number of player shops |
 | `atradenpc.limit.bypass` | op | No shop limit |
 | `atradenpc.admin` | op | Edit/remove every shop, bypass chest protection, reload |
@@ -69,6 +74,32 @@ mvn clean package
 ```
 
 The jar is written to `target/ATradeNPC-<version>.jar`. Every push to GitHub also builds the jar automatically (see the **Actions** tab).
+
+## FancyHolograms
+
+Install a FancyHolograms **2.x** release compatible with your Paper server (integration built against API **2.9.1**).
+FancyHolograms is optional; shops and trades work without it. FancyNpcs is not required.
+
+Create and position a hologram using FancyHolograms, then link it by name:
+
+```text
+/hologram create text toko_pedang
+/hologram edit toko_pedang setline 1 <gold>Toko Pedang
+/hologram edit toko_pedang addline <gray>Klik kanan untuk belanja
+/atrade hologram link 1 toko_pedang
+/atrade hologram info 1
+```
+
+- Linking preserves the hologram's current position. Place it above the NPC before linking.
+- Continue editing text, colors, background, scale, visibility and position through `/hologram edit <name> ...`.
+- `/atrade movehere` and `/atrade center` move the linked hologram with the NPC, preserving its relative position and orientation. Manual hologram position edits become the new offset on the next NPC move.
+- Links and offsets are saved in `data/shops.yml`. If FancyHolograms or the named hologram is temporarily unavailable during an NPC move, the pending position is applied when it becomes available again.
+- One hologram can be linked to one shop. It must be persistent, in the same world when linking, and not linked to FancyNpcs.
+- The ordinary NPC name tag is hidden while its linked hologram is available. Set `holograms.hide-npc-name: false` to keep it visible. If the provider or hologram is missing, the ordinary name tag returns automatically.
+- Unlinking or deleting an ATradeNPC shop **keeps** the hologram. Remove it separately with FancyHolograms if desired. To rename a hologram, unlink it and link its new name.
+- Alias: `/atrade holo`. Linking requires `atradenpc.hologram` (op by default) or `atradenpc.admin`, plus permission to edit that shop.
+
+FancyHolograms' own `linkwithnpc` command is for FancyNpcs; use `/atrade hologram link` for ATradeNPC.
 
 ## Files
 
@@ -82,6 +113,14 @@ The jar is written to `target/ATradeNPC-<version>.jar`. Every push to GitHub als
 Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
+
+### 1.3.0
+
+- Add optional FancyHolograms linking, unlinking, info and tab completion.
+- Preserve external hologram appearance edits and follow shop moves, including deferred moves while the provider is unavailable.
+- Save links across restarts and hide the ordinary NPC name tag while a linked hologram is available.
+- Add `holograms.hide-npc-name` and integration messages through the existing automatic config/language updater.
+- Fix a missing YAML separator in the entity-type error message, including automatic repair of old language files with a backup.
 
 ### 1.2.1
 

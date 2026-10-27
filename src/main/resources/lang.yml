@@ -11,7 +11,7 @@ notLookingAtShop: "<red>Look at a shop NPC or give a shop id."
 notYourShop: "<red>That is not your shop."
 invalidNumber: "<red><white>%input%</white> is not a valid number."
 nameTooLong: "<red>That name is too long (max <white>%max%</white> characters)."
-invalidEntityType:"<red>Entity type <white>%type%</white> is not allowed. Allowed: <white>%types%"
+invalidEntityType: "<red>Entity type <white>%type%</white> is not allowed. Allowed: <white>%types%"
 
 shopCreated: "<#0BA6DF>Shop <white>#%id%</white> created! <gray>Sneak + right-click the NPC to edit it."
 shopRemoved: "<#0BA6DF>Shop <white>#%id%</white> removed."
@@ -67,6 +67,18 @@ list-header: "<#0BA6DF>Shops of <white>%player%</white> <gray>(%count%)"
 list-entry: "<gray>#%id% <reset>%name%</reset> <dark_gray>| <gray>%type% <dark_gray>| <white>%world% %x% %y% %z% <dark_gray>| <gray>%offers% offers"
 list-empty: "<gray>No shops found."
 
+# FancyHolograms integration
+hologramUsage: "<#0BA6DF>/atrade hologram link <id> <hologram> <gray>| <#0BA6DF>/atrade hologram unlink <id> <gray>| <#0BA6DF>/atrade hologram info <id>"
+hologramUnavailable: "<red>Install and enable a compatible FancyHolograms 2.x release first."
+hologramNotFound: "<red>Hologram <white>%hologram%</white> was not found or FancyHolograms is still loading."
+hologramConflict: "<red>Use a persistent hologram that is not linked to FancyNpcs."
+hologramAlreadyLinked: "<red>That hologram is already linked to another shop. Unlink it first."
+hologramWrongWorld: "<red>The hologram and shop NPC must be in the same loaded world when linking."
+hologramLinked: "<#0BA6DF>Linked <white>%hologram%</white> to shop <white>#%id%</white>. Edit it with <white>/hologram edit %hologram%</white>."
+hologramUnlinked: "<#0BA6DF>Unlinked the hologram from shop <white>#%id%</white>. The hologram itself was kept."
+hologramNotLinked: "<gray>Shop <white>#%id%</white> has no linked hologram."
+hologramInfo: "<#0BA6DF>Shop <white>#%id%</white>: <white>%hologram%</white> <gray>(available: %available%)"
+
 help:
   - "<gradient:#0BA6DF:#5AD1FF><bold>ATradeNPC</bold></gradient> <gray>commands"
   - "<#0BA6DF>/atrade create admin [type] [name] <gray>- infinite stock shop at your location"
@@ -80,6 +92,9 @@ help:
   - "<#0BA6DF>/atrade tp <id> <gray>- teleport to a shop"
   - "<#0BA6DF>/atrade open <id> [player] <gray>- open a shop's trade screen"
   - "<#0BA6DF>/atrade reload <gray>- reload config"
+  - "<#0BA6DF>/atrade hologram link <id> <hologram> <gray>- link a FancyHolograms hologram"
+  - "<#0BA6DF>/atrade hologram unlink <id> <gray>- unlink without deleting the hologram"
+  - "<#0BA6DF>/atrade hologram info <id> <gray>- show the linked hologram"
 
 # ---------------- GUI ----------------
 gui:

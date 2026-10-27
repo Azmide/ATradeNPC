@@ -206,7 +206,8 @@ public class NpcManager {
 
     private void applyLook(TradeShop shop, Entity entity) {
         entity.customName(Text.parse(shop.getName()));
-        entity.setCustomNameVisible(true);
+        entity.setCustomNameVisible(!plugin.getSettings().hideHologramNpcName
+                || !plugin.getHolograms().hasHologram(shop));
         Villager.Profession profession = profession(shop.getProfession());
         if (entity instanceof Villager villager) {
             villager.setProfession(profession);

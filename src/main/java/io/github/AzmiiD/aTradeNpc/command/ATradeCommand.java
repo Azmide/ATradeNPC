@@ -26,7 +26,7 @@ import java.util.UUID;
 /** /atrade &lt;create|edit|remove|rename|movehere|list|tp|open|reload|help&gt; */
 public class ATradeCommand implements BasicCommand {
 
-    private static final List<String> SUBS = List.of("create", "edit", "remove", "rename", "movehere", "center", "list", "tp", "open", "reload", "help");
+    private static final List<String> SUBS = List.of("create", "edit", "remove", "rename", "movehere", "center", "hologram", "list", "tp", "open", "reload", "help");
 
     private final ATradeNPC plugin;
 
@@ -49,6 +49,7 @@ public class ATradeCommand implements BasicCommand {
             case "rename" -> rename(sender, args);
             case "movehere" -> moveHere(sender, args);
             case "center" -> center(sender, args);
+            case "hologram", "holo" -> hologram(sender, args);
             case "list" -> list(sender, args);
             case "tp" -> tp(sender, args);
             case "open" -> open(sender, args);
@@ -198,6 +199,38 @@ public class ATradeCommand implements BasicCommand {
         }
     }
 
+    // /atrade hologram <link|unlink|info> <id> [hologram name]
+    private void hologram(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("atradenpc.hologram") && !sender.hasPermission("atradenpc.admin")) {
+            lang().send(sender, "noPermission");
+            return;
+        }
+        if (args.length < 3 || !List.of("link", "unlink", "info").contains(args[1].toLowerCase(Locale.ROOT))
+                || (args[1].equalsIgnoreCase("link") && args.length != 4)) {
+            lang().send(sender, "hologramUsage");
+            return;
+        }
+        TradeShop shop = findShop(sender, args, 2);
+        if (shop == null || !canEdit(sender, shop)) {
+            return;
+        }
+        var holograms = plugin.getHolograms();
+        switch (args[1].toLowerCase(Locale.ROOT)) {
+            case "link" -> {
+                String error = holograms.link(shop, args[3]);
+                lang().send(sender, error == null ? "hologramLinked" : error,
+                        "%id%", String.valueOf(shop.getId()), "%hologram%", args[3]);
+            }
+            case "unlink" -> {
+                holograms.unlink(shop);
+                lang().send(sender, "hologramUnlinked", "%id%", String.valueOf(shop.getId()));
+            }
+            case "info" -> lang().send(sender, shop.getHologramName() == null ? "hologramNotLinked" : "hologramInfo",
+                    "%id%", String.valueOf(shop.getId()), "%hologram%", shop.getHologramName() == null ? "" : shop.getHologramName(),
+                    "%available%", String.valueOf(holograms.hasHologram(shop)));
+        }
+    }
+
     // /atrade list [player|all]
     private void list(CommandSender sender, String[] args) {
         List<TradeShop> shops;
@@ -313,6 +346,21 @@ public class ATradeCommand implements BasicCommand {
             return CommandUtil.filter(SUBS, args[0]);
         }
         String sub = args[0].toLowerCase(Locale.ROOT);
+        if (sub.equals("hologram") || sub.equals("holo")) {
+            if (!sender.hasPermission("atradenpc.hologram") && !sender.hasPermission("atradenpc.admin")) {
+                return List.of();
+            }
+            if (args.length == 2) {
+                out.addAll(List.of("link", "unlink", "info"));
+            } else if (args.length == 3) {
+                plugin.getShopManager().getShops().stream()
+                        .filter(shop -> sender instanceof Player p ? shop.canEdit(p) : sender.hasPermission("atradenpc.admin"))
+                        .forEach(shop -> out.add(String.valueOf(shop.getId())));
+            } else if (args.length == 4 && args[1].equalsIgnoreCase("link")) {
+                out.addAll(plugin.getHolograms().names());
+            }
+            return CommandUtil.filter(out, args[args.length - 1]);
+        }
         if (sub.equals("create")) {
             if (args.length == 2) {
                 if (sender.hasPermission("atradenpc.create.admin")) {

@@ -8,6 +8,7 @@ import io.github.AzmiiD.aTradeNpc.economy.VaultHook;
 import io.github.AzmiiD.aTradeNpc.gui.Menu;
 import io.github.AzmiiD.aTradeNpc.gui.MenuListener;
 import io.github.AzmiiD.aTradeNpc.gui.TradeScreen;
+import io.github.AzmiiD.aTradeNpc.hologram.HologramService;
 import io.github.AzmiiD.aTradeNpc.listener.ChestListener;
 import io.github.AzmiiD.aTradeNpc.listener.NpcListener;
 import io.github.AzmiiD.aTradeNpc.npc.NpcManager;
@@ -47,6 +48,7 @@ public final class ATradeNPC extends JavaPlugin {
     private TransactionService transactions;
     private ChatPrompt prompt;
     private TradeScreen tradeScreen;
+    private HologramService holograms;
 
     @Override
     public void onEnable() {
@@ -59,6 +61,7 @@ public final class ATradeNPC extends JavaPlugin {
         transactions = new TransactionService(this);
         prompt = new ChatPrompt(this);
         tradeScreen = new TradeScreen(this);
+        holograms = new HologramService(this);
 
         registerPermissions();
         loadConfigs();
@@ -74,6 +77,7 @@ public final class ATradeNPC extends JavaPlugin {
 
         npcManager.spawnAllLoaded();
         npcManager.start(settings.npcCheckInterval);
+        Bukkit.getScheduler().runTaskTimer(this, holograms::checkAll, 20L, 40L);
         getLogger().info("Loaded " + shopManager.getShops().size() + " shop(s)");
 
         // Economy plugins may register with Vault after us, so check once the server is running.
@@ -121,6 +125,7 @@ public final class ATradeNPC extends JavaPlugin {
                 {"atradenpc.create.player", PermissionDefault.TRUE, "Create your own player shops"},
                 {"atradenpc.create.admin", PermissionDefault.OP, "Create and edit admin shops (infinite stock)"},
                 {"atradenpc.open", PermissionDefault.OP, "Use /atrade open"},
+                {"atradenpc.hologram", PermissionDefault.OP, "Link FancyHolograms to shop NPCs"},
                 {"atradenpc.limit.bypass", PermissionDefault.OP, "No limit on player shops"},
         };
         for (Object[] n : nodes) {
@@ -164,6 +169,10 @@ public final class ATradeNPC extends JavaPlugin {
 
     public static ATradeNPC getInstance() {
         return instance;
+    }
+
+    public HologramService getHolograms() {
+        return holograms;
     }
 
     public Settings getSettings() {

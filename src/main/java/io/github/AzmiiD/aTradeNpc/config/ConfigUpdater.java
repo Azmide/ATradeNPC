@@ -42,9 +42,15 @@ public final class ConfigUpdater {
         }
         YamlConfiguration def = new YamlConfiguration();
         YamlConfiguration user = new YamlConfiguration();
+        boolean repaired;
         try (InputStreamReader reader = new InputStreamReader(defaults, StandardCharsets.UTF_8)) {
             def.load(reader);
-            user.load(file);
+            String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            // Releases before 1.3.0 shipped this one key without a YAML separator.
+            // Validate the repaired document before changing anything on disk.
+            String corrected = original.replaceFirst("(?m)^invalidEntityType:(?=\")", "invalidEntityType: ");
+            repaired = !original.equals(corrected);
+            user.loadFromString(corrected);
         } catch (IOException | InvalidConfigurationException e) {
             // A broken user file is reported by Bukkit when it is loaded; never overwrite it here.
             logger.log(Level.WARNING, "Could not check " + file.getName() + " for new options: " + e.getMessage());
@@ -65,13 +71,16 @@ public final class ConfigUpdater {
             user.setInlineComments(path, def.getInlineComments(path));
             added.add(path);
         }
-        if (added.isEmpty()) {
+        if (added.isEmpty() && !repaired) {
             return added;
         }
 
         try {
             backup(file);
             user.save(file);
+            if (repaired) {
+                logger.info("Repaired the legacy invalidEntityType YAML separator in " + file.getName());
+            }
             logger.info("Added " + added.size() + " new option(s) to " + file.getName() + ": " + String.join(", ", added));
         } catch (IOException e) {
             logger.log(Level.WARNING, "Could not save new options to " + file.getName(), e);

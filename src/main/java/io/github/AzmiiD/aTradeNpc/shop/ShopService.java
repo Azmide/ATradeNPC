@@ -139,7 +139,9 @@ public class ShopService {
         }
         ShopManager manager = plugin.getShopManager();
         manager.unindex(shop);
+        plugin.getHolograms().beforeMove(shop);
         shop.setLocation(place(loc));
+        plugin.getHolograms().afterMove(shop);
         manager.reindex(shop);
         manager.save();
         plugin.getNpcManager().respawn(shop);
@@ -169,7 +171,9 @@ public class ShopService {
         loc.setZ(loc.getBlockZ() + 0.5);
         loc.setYaw(Math.round(loc.getYaw() / 45f) * 45f);
         loc.setPitch(0);
+        plugin.getHolograms().beforeMove(shop);
         shop.setLocation(loc);
+        plugin.getHolograms().afterMove(shop);
         manager.reindex(shop);
         manager.save();
         plugin.getNpcManager().respawn(shop);

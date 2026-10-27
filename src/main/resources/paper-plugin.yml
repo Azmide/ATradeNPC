@@ -8,6 +8,10 @@ author: AzmiiD
 # Paper plugin: commands are registered through the Brigadier lifecycle API and permissions in code.
 dependencies:
   server:
+    FancyHolograms:
+      load: BEFORE
+      required: false
+      join-classpath: true
     Vault:
       load: BEFORE
       required: false
