@@ -3,7 +3,7 @@
 Automated tests cover link serialization and old shop compatibility, duplicate
 links, FancyNpcs/persistence conflicts, missing providers, unlinking without
 deleting the hologram, manual position edits, NPC moves across worlds, deferred
-moves across restarts, provider reload fallback, valid resource YAML, and config
+moves across restarts, links surviving provider reloads, valid resource YAML, and config
 upgrade backups/preservation of existing settings.
 
 On a Paper 26.2 server with a compatible FancyHolograms 2.x plugin:
@@ -19,11 +19,12 @@ On a Paper 26.2 server with a compatible FancyHolograms 2.x plugin:
    `/hologram edit`. ATradeNPC must not reset these edits during periodic checks.
 4. Move and center the NPC using both commands and the editor. Check position
    offsets, orientation, world changes, persistence after restart, and no duplicate holograms.
-5. Verify the ordinary NPC name tag hides only while the named hologram is
-   available. Remove/reload the hologram, then recreate it with the same name;
-   the fallback name tag should update within two seconds.
-6. Confirm `holograms.hide-npc-name: false` survives a config upgrade and reload.
-   Newly added messages/options should appear without replacing existing values.
+5. Aim the crosshair directly at an NPC, then look away. No vanilla name tag
+   should appear, whether linked, unlinked, or missing its FancyHolograms provider.
+   Repeat after renaming the shop, respawning it, reloading ATradeNPC, and restarting.
+6. Leave a legacy `holograms.hide-npc-name: false` in the config. It must not bring
+   back vanilla name tags. Existing settings are preserved but this old key is ignored.
+   Verify `holograms.link-height` still controls placement on link/relink.
 7. Unlink and delete shops: the externally managed hologram must remain.
 8. A non-op without `atradenpc.hologram` cannot link. A user granted that
    permission still cannot edit another owner's shop. Console/admin can link.

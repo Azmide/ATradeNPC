@@ -195,7 +195,7 @@ class HologramServiceTest {
     }
 
     @Test
-    void removedOrReloadingHologramsRestoreNameFallbackWithoutDroppingLink() {
+    void removedOrReloadingHologramsKeepTheirSavedLink() {
         assertNull(service.link(shop, "shop_holo"));
         assertTrue(service.hasHologram(shop));
         var entry = bridge.entries.remove("shop_holo");

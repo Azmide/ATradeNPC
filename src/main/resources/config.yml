@@ -21,9 +21,7 @@ npc:
 log-transactions: true
 
 holograms:
-  # Hide the NPC's ordinary name tag while its linked FancyHolograms hologram exists.
-  # Text, style and position are edited with FancyHolograms commands.
-  hide-npc-name: true
+  # NPC entity name tags are always removed. Edit labels with FancyHolograms.
   # Linking/relinking places the hologram this many blocks above the NPC's feet.
   link-height: 2.5
 

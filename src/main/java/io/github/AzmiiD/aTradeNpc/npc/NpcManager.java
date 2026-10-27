@@ -2,7 +2,6 @@ package io.github.AzmiiD.aTradeNpc.npc;
 
 import io.github.AzmiiD.aTradeNpc.ATradeNPC;
 import io.github.AzmiiD.aTradeNpc.shop.TradeShop;
-import io.github.AzmiiD.aTradeNpc.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -176,7 +175,7 @@ public class NpcManager {
         }
     }
 
-    /** Updates name/profession of the living NPC without respawning it. */
+    /** Clears the vanilla name tag and updates the living NPC's profession without respawning it. */
     public void refresh(TradeShop shop) {
         Entity entity = shop.getEntity();
         if (entity != null && entity.isValid()) {
@@ -205,9 +204,10 @@ public class NpcManager {
     }
 
     private void applyLook(TradeShop shop, Entity entity) {
-        entity.customName(Text.parse(shop.getName()));
-        entity.setCustomNameVisible(!plugin.getSettings().hideHologramNpcName
-                || !plugin.getHolograms().hasHologram(shop));
+        // A hidden custom name can still appear when targeted. Remove the name
+        // component entirely; shop names remain in menus/data and FancyHolograms owns labels.
+        entity.customName(null);
+        entity.setCustomNameVisible(false);
         Villager.Profession profession = profession(shop.getProfession());
         if (entity instanceof Villager villager) {
             villager.setProfession(profession);

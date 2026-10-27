@@ -95,7 +95,7 @@ Create a hologram using FancyHolograms, then link it by name:
 - `/atrade movehere` and `/atrade center` move the linked hologram with the NPC, preserving its relative position and orientation. Manual hologram position edits become the new offset on the next NPC move.
 - Links and offsets are saved in `data/shops.yml`. If FancyHolograms or the named hologram is temporarily unavailable during an NPC move, the pending position is applied when it becomes available again.
 - One hologram can be linked to one shop. It must be persistent, in the same world when linking, and not linked to FancyNpcs.
-- The ordinary NPC name tag is hidden while its linked hologram is available. Set `holograms.hide-npc-name: false` to keep it visible. If the provider or hologram is missing, the ordinary name tag returns automatically.
+- NPC entities have no vanilla custom name, so no extra label appears when targeting them. Display names above NPCs are managed only by FancyHolograms. Shop names are still stored and used in menus/commands. The old `holograms.hide-npc-name` setting is ignored, including existing `false` values.
 - Unlinking or deleting an ATradeNPC shop **keeps** the hologram. Remove it separately with FancyHolograms if desired. To rename a hologram, unlink it and link its new name.
 - Alias: `/atrade holo`. Linking requires `atradenpc.hologram` (op by default) or `atradenpc.admin`, plus permission to edit that shop.
 
@@ -113,6 +113,12 @@ FancyHolograms' own `linkwithnpc` command is for FancyNpcs; use `/atrade hologra
 Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
+
+### 1.3.2
+
+- Remove NPC entity custom names completely, including hover/target labels. FancyHolograms is the only source of floating labels.
+- Retire `holograms.hide-npc-name`; existing copies of that setting are ignored. Shops can still run without FancyHolograms, with no floating name label.
+- Keep `holograms.link-height` for adjusting placement; changing it takes effect on the next link/relink.
 
 ### 1.3.1
 

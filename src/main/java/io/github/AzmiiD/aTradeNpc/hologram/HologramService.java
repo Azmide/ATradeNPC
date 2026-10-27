@@ -134,14 +134,13 @@ public final class HologramService {
         applyPendingMove(shop);
     }
 
-    /** Polls provider reload/removal and updates name tags. Does not reset positions edited in FancyHolograms. */
+    /** Retries pending moves without resetting positions edited in FancyHolograms. */
     public void checkAll() {
         for (TradeShop shop : shops.get()) {
             if (shop.getHologramName() != null) {
                 if (applyPendingMove(shop)) {
                     save.run();
                 }
-                refresh.accept(shop);
             }
         }
     }

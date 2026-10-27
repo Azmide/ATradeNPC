@@ -71,7 +71,7 @@ public final class FancyHologramsBridge implements HologramBridge {
             return manager.isLoaded() ? operation.apply(manager) : fallback;
         } catch (RuntimeException | LinkageError error) {
             if (!warned) {
-                logger.warning("FancyHolograms API could not be accessed; using NPC name tags until it is available: " + error);
+                logger.warning("FancyHolograms API could not be accessed; pending hologram moves will be retried: " + error);
                 warned = true;
             }
             return fallback;

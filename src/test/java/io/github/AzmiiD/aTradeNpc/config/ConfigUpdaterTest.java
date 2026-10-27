@@ -27,7 +27,6 @@ class ConfigUpdaterTest {
                     assertTrue(yaml.contains("hologramLinked"));
                 }
                 if (resource.equals("config.yml")) {
-                    assertTrue(yaml.getBoolean("holograms.hide-npc-name"));
                     assertEquals(2.5, yaml.getDouble("holograms.link-height"));
                 }
             }
@@ -41,11 +40,11 @@ class ConfigUpdaterTest {
         Files.writeString(file, original);
         var added = ConfigUpdater.update(file.toFile(), getClass().getClassLoader().getResourceAsStream("config.yml"),
                 Logger.getLogger("ConfigUpdaterTest"));
-        assertTrue(added.contains("holograms.hide-npc-name"));
+        assertTrue(added.contains("holograms.link-height"));
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file.toFile());
         assertEquals(275, yaml.getInt("click-cooldown-ms"));
         assertEquals("EMERALD", yaml.getString("economy.money-item"));
-        assertTrue(yaml.getBoolean("holograms.hide-npc-name"));
+        assertEquals(2.5, yaml.getDouble("holograms.link-height"));
         try (var backups = Files.list(directory.resolve("backups"))) {
             assertEquals(original, Files.readString(backups.findFirst().orElseThrow()));
         }
@@ -54,7 +53,7 @@ class ConfigUpdaterTest {
     }
 
     @Test
-    void preservesExplicitDisabledNameHiding() throws Exception {
+    void preservesLegacyUserKeysWithoutOverwritingValues() throws Exception {
         Path file = directory.resolve("config.yml");
         Files.writeString(file, "holograms:\n  hide-npc-name: false\n");
         ConfigUpdater.update(file.toFile(), new ByteArrayInputStream("holograms:\n  hide-npc-name: true\n".getBytes(StandardCharsets.UTF_8)),

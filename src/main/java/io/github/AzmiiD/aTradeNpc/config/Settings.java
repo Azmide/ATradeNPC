@@ -21,7 +21,6 @@ public class Settings {
     public final List<EntityType> allowedEntityTypes = new ArrayList<>();
     public final String currencyFormat;
     public final Material moneyItem;
-    public final boolean hideHologramNpcName;
     public final double hologramLinkHeight;
 
     public final boolean centerNpc;
@@ -38,7 +37,6 @@ public class Settings {
 
     public Settings(FileConfiguration c, Logger logger) {
         clickCooldown = Math.max(0, c.getLong("click-cooldown-ms", 100));
-        hideHologramNpcName = c.getBoolean("holograms.hide-npc-name", true);
         double height = c.getDouble("holograms.link-height", 2.5);
         hologramLinkHeight = Double.isFinite(height) ? Math.max(0, height) : 2.5;
         npcCheckInterval = Math.max(1, c.getInt("npc-check-interval-seconds", 5));
