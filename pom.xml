@@ -6,7 +6,7 @@
 
     <groupId>io.github.AzmiiD</groupId>
     <artifactId>ATradeNPC</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <name>ATradeNPC</name>

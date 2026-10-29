@@ -140,6 +140,13 @@ Just replace the jar. On startup (and on `/atrade reload`) new options from the 
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
 
+### 1.4.1
+
+- AUTO mode now tries native Cumulus SimpleForms for detected Bedrock players: paginated offers, price/item details, and a separate confirmation before each trade.
+- Form responses are consumed once and transactions run on the server thread, rechecking that the player is online and the offer still exists.
+- Requires a local Floodgate/Geyser API with forms support; falls back to the customer chest menu when forms cannot be sent. Keep `trade-menu: auto` to enable forms; `chest` explicitly selects the chest menu.
+- Form rendering/touch interaction still requires testing with a real Bedrock client.
+
 ### 1.4.0
 
 - Add a Bedrock-compatible customer chest menu for buying, selling and item trades.

@@ -73,6 +73,11 @@ public class TradeScreen implements Listener {
             return;
         }
         TradeMenuMode mode = plugin.getSettings().tradeMenu;
+        if (mode == TradeMenuMode.AUTO && BedrockPlayers.isBedrockPlayer(player.getUniqueId())
+                && BedrockTradeForms.open(plugin, player, shop, 0)) {
+            plugin.getSounds().play(player, "open-shop");
+            return;
+        }
         if (mode.useChest(mode == TradeMenuMode.AUTO && BedrockPlayers.isBedrockPlayer(player.getUniqueId()))) {
             new CustomerMenu(plugin, player, shop).open();
             plugin.getSounds().play(player, "open-shop");
