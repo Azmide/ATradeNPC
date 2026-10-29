@@ -140,6 +140,14 @@ Just replace the jar. On startup (and on `/atrade reload`) new options from the 
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
 
+### 1.4.2
+
+- Improve Bedrock forms with Indonesian BUY/SELL/TRADE explanations, explicit pay/receive prices, stock, confirmation details and button icons.
+- Vanilla fish/rod icons work without an extra pack. Custom model icons use the mappings in `bedrock-forms.icons`.
+- Install the separately supplied `ATradeNPC-form-icons.mcpack` in the Geyser server's `packs` directory and restart Geyser so clients download it, then enable `bedrock-forms.custom-icons-enabled` and reload ATradeNPC. Existing connected clients may need to reconnect.
+- The custom pack contains Fishing Expansion textures from the local ItemsAdder assets. It is a local build artifact, not embedded in the plugin JAR or published as source. Mappings match the source material/custom-model ids; update them if your server uses different ids.
+- Keep `trade-menu: auto` for forms. Java menus and transaction validation are unchanged. Real Bedrock image rendering still requires client testing.
+
 ### 1.4.1
 
 - AUTO mode now tries native Cumulus SimpleForms for detected Bedrock players: paginated offers, price/item details, and a separate confirmation before each trade.

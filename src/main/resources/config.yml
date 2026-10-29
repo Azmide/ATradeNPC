@@ -105,3 +105,83 @@ player-shops:
   protect-chest: true
   # Percentage taken from money the owner earns when a customer buys (0 = no tax).
   tax-percent: 0.0
+
+# Install ATradeNPC-form-icons.mcpack in Geyser packs before enabling custom icons.
+bedrock-forms:
+  custom-icons-enabled: false
+  icons:
+    COD-485192: textures/atradenpc/trout
+    COD-485193: textures/atradenpc/sardine
+    COD-485194: textures/atradenpc/pike
+    COD-485195: textures/atradenpc/perch
+    COD-485196: textures/atradenpc/mackerel
+    COD-485197: textures/atradenpc/herring
+    COD-485198: textures/atradenpc/catfish
+    COD-485199: textures/atradenpc/carp
+    COD-485200: textures/atradenpc/bass
+    COD-485201: textures/atradenpc/trigger_fish
+    COD-485202: textures/atradenpc/surgeonfish
+    COD-485203: textures/atradenpc/parrotfish
+    COD-485204: textures/atradenpc/moray_eel
+    COD-485205: textures/atradenpc/lion_fish
+    COD-485206: textures/atradenpc/damsel_fish
+    COD-485207: textures/atradenpc/butterflyfish
+    COD-485208: textures/atradenpc/angelfish
+    COD-485209: textures/atradenpc/snail
+    COD-485210: textures/atradenpc/mussel
+    COD-485211: textures/atradenpc/freshwater_sponge
+    COD-485212: textures/atradenpc/crayfish
+    COD-485213: textures/atradenpc/crab
+    COD-485214: textures/atradenpc/clam
+    COD-485215: textures/atradenpc/amphipod
+    COD-485216: textures/atradenpc/wahoo
+    COD-485217: textures/atradenpc/tuna
+    COD-485218: textures/atradenpc/sword_fish
+    COD-485219: textures/atradenpc/snook
+    COD-485220: textures/atradenpc/snapper
+    COD-485221: textures/atradenpc/redfish
+    COD-485222: textures/atradenpc/marlin
+    COD-485223: textures/atradenpc/grouper
+    COD-485224: textures/atradenpc/barracuda
+    COD-485225: textures/atradenpc/viper_fish
+    COD-485227: textures/atradenpc/vampire_squid
+    COD-485228: textures/atradenpc/lanternfish
+    COD-485229: textures/atradenpc/gulper_eel
+    COD-485230: textures/atradenpc/giant_isopod
+    COD-485231: textures/atradenpc/dumbo_octopus
+    COD-485232: textures/atradenpc/dragon_fish
+    COD-485233: textures/atradenpc/blobfish
+    COD-485234: textures/atradenpc/barreleye_fish
+    COD-485235: textures/atradenpc/anglerfish
+    COD-485236: textures/atradenpc/ashmaw
+    COD-485237: textures/atradenpc/soulfin
+    COD-485238: textures/atradenpc/blightscale
+    COD-485239: textures/atradenpc/bone_dart
+    COD-485240: textures/atradenpc/cinder_pike
+    COD-485241: textures/atradenpc/ember_carp
+    COD-485242: textures/atradenpc/glowsnap
+    COD-485243: textures/atradenpc/glowtail
+    COD-485244: textures/atradenpc/hellpuffer
+    COD-485245: textures/atradenpc/hellstripe
+    COD-485246: textures/atradenpc/lava_lantern
+    COD-485247: textures/atradenpc/magma_belly
+    COD-485248: textures/atradenpc/nether_ray
+    COD-485249: textures/atradenpc/rustfin
+    COD-485250: textures/atradenpc/spore_jelly
+    COD-485251: textures/atradenpc/warped_eel
+    COD-485252: textures/atradenpc/moltenjaw
+    PAPER-1272: textures/atradenpc/nautilus_bait
+    PAPER-1273: textures/atradenpc/bobber_bait
+    PAPER-1274: textures/atradenpc/ender_bait
+    PAPER-1275: textures/atradenpc/iridescent_bait
+    PAPER-1276: textures/atradenpc/sea_heart_bait
+    PAPER-1277: textures/atradenpc/gelatin_bait
+    PAPER-1278: textures/atradenpc/copper_bait
+    PAPER-1279: textures/atradenpc/trident_bait
+    PAPER-1280: textures/atradenpc/slime_bait
+    PAPER-1281: textures/atradenpc/magma_bait
+    FISHING_ROD-1000: textures/atradenpc/copper_fishing_rod
+    FISHING_ROD-1001: textures/atradenpc/iron_fishing_rod
+    FISHING_ROD-1004: textures/atradenpc/golden_fishing_rod
+    FISHING_ROD-1002: textures/atradenpc/diamond_fishing_rod
+    FISHING_ROD-1003: textures/atradenpc/netherite_fishing_rod
