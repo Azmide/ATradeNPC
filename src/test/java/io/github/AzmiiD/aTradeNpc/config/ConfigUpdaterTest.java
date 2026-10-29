@@ -27,6 +27,7 @@ class ConfigUpdaterTest {
                     assertTrue(yaml.contains("hologramLinked"));
                 }
                 if (resource.equals("config.yml")) {
+                    assertEquals("auto", yaml.getString("trade-menu"));
                     assertEquals(2.5, yaml.getDouble("holograms.link-height"));
                 }
             }
@@ -41,6 +42,7 @@ class ConfigUpdaterTest {
         var added = ConfigUpdater.update(file.toFile(), getClass().getClassLoader().getResourceAsStream("config.yml"),
                 Logger.getLogger("ConfigUpdaterTest"));
         assertTrue(added.contains("holograms.link-height"));
+        assertTrue(added.contains("trade-menu"));
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file.toFile());
         assertEquals(275, yaml.getInt("click-cooldown-ms"));
         assertEquals("EMERALD", yaml.getString("economy.money-item"));

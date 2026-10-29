@@ -3,7 +3,7 @@
 Shopkeeper NPCs for **Paper 26.2** that trade **any item**, including custom items, and buy or sell items for **Vault money**.
 Inspired by [Shopkeepers](https://github.com/Shopkeepers/Shopkeepers), which only supports item trades.
 
-Customers use the **vanilla villager trading screen**. Owners edit their shop in a GUI.
+Java customers use the **vanilla villager trading screen**. Detected Bedrock customers use a chest menu. Owners edit their shop in a GUI.
 
 ## Features
 
@@ -67,6 +67,32 @@ Aliases: `/atradenpc`, `/tradenpc`. Without an id, commands use the NPC you are 
 | `atradenpc.limit.bypass` | op | No shop limit |
 | `atradenpc.admin` | op | Edit/remove every shop, bypass chest protection, reload |
 
+## Bedrock / cross-platform trading
+
+Money offers use a virtual ingredient in the Java merchant screen. Bedrock may
+disable its Trade button even when the player's Vault balance is sufficient.
+Version 1.4.0 adds a customer chest menu that uses the same transaction checks
+without requiring a virtual ingredient or merchant result-click packet.
+
+- `trade-menu: auto` (default): detect Bedrock using the local Floodgate or
+  Geyser API, use the chest menu for those players, and preserve Java's merchant.
+- `trade-menu: chest`: use the compatible chest menu for everyone. Use this if
+  Geyser/Floodgate runs only on a proxy and the backend cannot detect Bedrock.
+- `trade-menu: merchant`: explicitly use the vanilla merchant for everyone.
+
+In the chest menu, click/tap an offer to trade once. Prices/costs and stock appear
+in its lore. Where supported, shift-click buys/trades up to a stack or sells as
+many matching items as possible. Previous/next buttons handle shops with more
+than 45 offers. Stock, Vault balances, owner money, tax and inventory space are
+validated by the same transaction service. No real money-icon items are given out.
+
+Automatic detection requires Geyser or Floodgate on the Paper backend. A proxy
+setup using Floodgate must forward player data to the backend as described in
+the [Floodgate API documentation](https://geysermc.org/wiki/floodgate/api/#using-the-api-on-backend-servers).
+The CHEST setting works without either API on the backend. After changing the
+setting, run `/atrade reload` and reopen the shop. The new option/messages are
+added automatically during startup/reload with a backup of changed files.
+
 ## Building
 
 ```bash
@@ -113,6 +139,13 @@ FancyHolograms' own `linkwithnpc` command is for FancyNpcs; use `/atrade hologra
 Just replace the jar. On startup (and on `/atrade reload`) new options from the updated `config.yml` and `lang.yml`
 are added to your existing files with their default values and comments. Your own values are never changed.
 Before a file is changed, a copy is saved in `plugins/ATradeNPC/backups/`.
+
+### 1.4.0
+
+- Add a Bedrock-compatible customer chest menu for buying, selling and item trades.
+- Automatically detect backend Floodgate/Geyser players and preserve Java's merchant screen.
+- Add `trade-menu: auto|chest|merchant`, pagination, single/bulk trading and protection against queued clicks on closed or changed shops.
+- Preserve Vault/stock/tax/item-space checks through the existing transaction service.
 
 ### 1.3.2
 

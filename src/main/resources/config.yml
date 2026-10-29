@@ -6,6 +6,11 @@
 # Minimum delay between two clicks in a GUI (milliseconds).
 click-cooldown-ms: 100
 
+# auto = chest menu for Bedrock detected through local Floodgate/Geyser APIs; vanilla merchant for Java.
+# chest = chest menu for everyone (also works if Geyser/Floodgate runs only on a proxy).
+# merchant = vanilla merchant for everyone; virtual-money offers may be unusable on Bedrock.
+trade-menu: auto
+
 # Every X seconds missing/moved shop NPCs are respawned/teleported back.
 npc-check-interval-seconds: 5
 

@@ -1,6 +1,7 @@
 package io.github.AzmiiD.aTradeNpc.config;
 
 import org.bukkit.Material;
+import io.github.AzmiiD.aTradeNpc.gui.TradeMenuMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 
@@ -22,6 +23,7 @@ public class Settings {
     public final String currencyFormat;
     public final Material moneyItem;
     public final double hologramLinkHeight;
+    public final TradeMenuMode tradeMenu;
 
     public final boolean centerNpc;
     public final boolean lookAtPlayers;
@@ -37,6 +39,14 @@ public class Settings {
 
     public Settings(FileConfiguration c, Logger logger) {
         clickCooldown = Math.max(0, c.getLong("click-cooldown-ms", 100));
+        TradeMenuMode menu;
+        try {
+            menu = TradeMenuMode.parse(c.getString("trade-menu", "auto"));
+        } catch (IllegalArgumentException | NullPointerException invalid) {
+            logger.warning("Unknown trade-menu; using auto. Valid values: auto, chest, merchant.");
+            menu = TradeMenuMode.AUTO;
+        }
+        tradeMenu = menu;
         double height = c.getDouble("holograms.link-height", 2.5);
         hologramLinkHeight = Double.isFinite(height) ? Math.max(0, height) : 2.5;
         npcCheckInterval = Math.max(1, c.getInt("npc-check-interval-seconds", 5));

@@ -99,6 +99,13 @@ help:
 
 # ---------------- GUI ----------------
 gui:
+  customer-previous: "<#0BA6DF>Previous page"
+  customer-next: "<#0BA6DF>Next page"
+  customer-close: "<red>Close shop"
+  lore-customer:
+    - ""
+    - "<#0BA6DF>Click / tap to trade once."
+    - "<gray>Shift-click for bulk trading (where supported)."
   # Title of the villager trade screen
   trade-title: "%name%"
   editor-title: "<dark_gray>Edit: </dark_gray>%name%"

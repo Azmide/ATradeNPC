@@ -1,6 +1,7 @@
 package io.github.AzmiiD.aTradeNpc.gui;
 
 import io.github.AzmiiD.aTradeNpc.ATradeNPC;
+import io.github.AzmiiD.aTradeNpc.compat.BedrockPlayers;
 import io.github.AzmiiD.aTradeNpc.shop.Offer;
 import io.github.AzmiiD.aTradeNpc.shop.OfferType;
 import io.github.AzmiiD.aTradeNpc.shop.TradeShop;
@@ -69,6 +70,12 @@ public class TradeScreen implements Listener {
     public void open(Player player, TradeShop shop) {
         if (shop.getOffers().isEmpty()) {
             plugin.getLang().send(player, "noOffers");
+            return;
+        }
+        TradeMenuMode mode = plugin.getSettings().tradeMenu;
+        if (mode.useChest(mode == TradeMenuMode.AUTO && BedrockPlayers.isBedrockPlayer(player.getUniqueId()))) {
+            new CustomerMenu(plugin, player, shop).open();
+            plugin.getSounds().play(player, "open-shop");
             return;
         }
         Merchant merchant = Bukkit.createMerchant();
